@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} · IPL 2026{% endblock %}
+{% block content %}
+
+<section class="team-hero" style="--tc: {{ color }}">
+  <div class="container team-hero-inner">
+    <div class="team-logo big" style="background: {{ color }}">{{ abbr }}</div>
+    <div>
+      <h1>{{ name }}</h1>
+      <p class="muted">IPL 2026 Season · Full team breakdown</p>
+      {% if stats.pts %}
+      <div class="kpi-row">
+        <div class="kpi"><span>Position</span><b>#{{ stats.pts.position }}</b></div>
+        <div class="kpi"><span>Matches</span><b>{{ stats.pts.matches }}</b></div>
+        <div class="kpi pos"><span>Wins</span><b>{{ stats.pts.wins }}</b></div>
+        <div class="kpi neg"><span>Losses</span><b>{{ stats.pts.defeats }}</b></div>
+        <div class="kpi"><span>Points</span><b>{{ stats.pts.points }}</b></div>
+        <div class="kpi"><span>NRR</span><b>{{ '%+.3f'|format(stats.pts.nrr) }}</b></div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="container grid-2">
+  <div class="card">
+    <div class="card-head"><h3>Batting</h3></div>
+    <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Batter</th><th>M</th><th>Runs</th><th>Avg</th><th>SR</th><th>HS</th></tr></thead>
+      <tbody>
+      {% for b in stats.bat %}
+      <tr><td><b>{{ b.batsman }}</b></td><td>{{ b.matches }}</td><td><b>{{ b.runs }}</b></td><td>{{ '%.2f'|format(b.average) }}</td><td>{{ '%.1f'|format(b.strike_rate) }}</td><td>{{ b.high_score }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Bowling</h3></div>
+    <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Bowler</th><th>M</th><th>Wkts</th><th>Eco</th><th>Avg</th><th>BBI</th></tr></thead>
+      <tbody>
+      {% for b in stats.bowl %}
+      <tr><td><b>{{ b.bowler }}</b></td><td>{{ b.matches }}</td><td><b>{{ b.wickets }}</b></td><td>{{ '%.2f'|format(b.economy) }}</td><td>{{ '%.2f'|format(b.avg) }}</td><td>{{ b.bbi }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="card">
+    <div class="card-head"><h3><i class="fa-solid fa-trophy"></i> Match Wins</h3></div>
+    {% if stats.wins %}
+    <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>#</th><th>Date</th><th>Opponent</th><th>Venue</th><th>Margin</th><th>POTM</th></tr></thead>
+      <tbody>
+      {% for m in stats.wins %}
+      <tr>
+        <td>{{ m.match_id }}</td>
+        <td>{{ m.date }}</td>
+        <td>{% if m.team1 == abbr %}{{ m.team2 }}{% else %}{{ m.team1 }}{% endif %}</td>
+        <td>{{ m.venue }}</td>
+        <td>{% if m.wb_runs %}{{ m.wb_runs|int }} runs{% elif m.wb_wickets %}{{ m.wb_wickets|int }} wickets{% endif %}</td>
+        <td>{{ m.player_of_the_match or '—' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% else %}<p class="muted">No completed wins recorded.</p>{% endif %}
+  </div>
+</section>
+
+{% endblock %}

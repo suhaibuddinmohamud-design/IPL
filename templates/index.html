@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}IPL 2026 · Analytics Dashboard{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner container">
+    <span class="chip"><i class="fa-solid fa-bolt"></i> Season 2026 · Live Analytics</span>
+    <h1>The complete <span class="grad">IPL 2026</span><br/>analytics dashboard.</h1>
+    <p class="lead">Players, teams, matches, charts and insights — powered by Flask, SQLite, Pandas &amp; Matplotlib.</p>
+    <div class="hero-cta">
+      <a href="#explore" class="btn btn-primary"><i class="fa-solid fa-chart-line"></i> Explore Stats</a>
+      <a href="{{ url_for('matches') }}" class="btn btn-ghost">View Matches <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-num" data-count="{{ total_matches }}">0</div><div class="stat-label">Matches</div></div>
+      <div class="stat"><div class="stat-num" data-count="{{ total_teams }}">0</div><div class="stat-label">Teams</div></div>
+      <div class="stat"><div class="stat-num" data-count="{{ total_players }}">0</div><div class="stat-label">Players</div></div>
+      <div class="stat"><div class="stat-num" data-count="{{ total_runs }}">0</div><div class="stat-label">Total Runs</div></div>
+      <div class="stat"><div class="stat-num" data-count="{{ total_wickets }}">0</div><div class="stat-label">Wickets</div></div>
+      <div class="stat"><div class="stat-num" data-count="{{ seasons }}">0</div><div class="stat-label">Season</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="explore" class="section container">
+  <div class="section-head">
+    <h2>Season Leaders</h2>
+    <p class="muted">The names making headlines this season.</p>
+  </div>
+  <div class="leader-grid">
+    <div class="leader-card orange">
+      <div class="leader-icon"><i class="fa-solid fa-baseball-bat-ball"></i></div>
+      <div class="leader-meta">Orange Cap</div>
+      <div class="leader-name">{{ orange_cap.batsman }}</div>
+      <div class="leader-team">{{ orange_cap.team }}</div>
+      <div class="leader-value">{{ orange_cap.runs }} <small>runs</small></div>
+    </div>
+    <div class="leader-card purple">
+      <div class="leader-icon"><i class="fa-solid fa-bowling-ball"></i></div>
+      <div class="leader-meta">Purple Cap</div>
+      <div class="leader-name">{{ purple_cap.bowler }}</div>
+      <div class="leader-team">{{ purple_cap.team }}</div>
+      <div class="leader-value">{{ purple_cap.wickets }} <small>wickets</small></div>
+    </div>
+    <div class="leader-card gold">
+      <div class="leader-icon"><i class="fa-solid fa-trophy"></i></div>
+      <div class="leader-meta">Most Wins</div>
+      <div class="leader-name">{{ top_team.team }}</div>
+      <div class="leader-team">Table Topper</div>
+      <div class="leader-value">{{ top_team.wins }} <small>wins</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="section container grid-2">
+  <div class="card">
+    <div class="card-head"><h3><i class="fa-solid fa-fire"></i> Top Run Scorers</h3><a href="{{ url_for('players') }}" class="link">All →</a></div>
+    <table class="data">
+      <thead><tr><th>#</th><th>Batter</th><th>Team</th><th>Runs</th><th>SR</th></tr></thead>
+      <tbody>
+        {% for b in top_bat %}
+        <tr><td>{{ loop.index }}</td><td>{{ b.batsman }}</td><td><span class="team-badge">{{ b.team }}</span></td><td><b>{{ b.runs }}</b></td><td>{{ '%.1f'|format(b.strike_rate) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3><i class="fa-solid fa-fire"></i> Top Wicket Takers</h3><a href="{{ url_for('players') }}" class="link">All →</a></div>
+    <table class="data">
+      <thead><tr><th>#</th><th>Bowler</th><th>Team</th><th>Wkts</th><th>Eco</th></tr></thead>
+      <tbody>
+        {% for b in top_bowl %}
+        <tr><td>{{ loop.index }}</td><td>{{ b.bowler }}</td><td><span class="team-badge">{{ b.team }}</span></td><td><b>{{ b.wickets }}</b></td><td>{{ '%.2f'|format(b.economy) }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="card">
+    <div class="card-head"><h3><i class="fa-solid fa-list-ol"></i> Points Table</h3><a href="{{ url_for('teams') }}" class="link">Team Hub →</a></div>
+    <table class="data">
+      <thead><tr><th>Pos</th><th>Team</th><th>M</th><th>W</th><th>L</th><th>Pts</th><th>NRR</th></tr></thead>
+      <tbody>
+        {% for p in pts %}
+        <tr>
+          <td><b>{{ p.position }}</b></td>
+          <td>{{ p.team }}</td>
+          <td>{{ p.matches }}</td>
+          <td class="pos">{{ p.wins }}</td>
+          <td class="neg">{{ p.defeats }}</td>
+          <td><b>{{ p.points }}</b></td>
+          <td class="{% if p.nrr >= 0 %}pos{% else %}neg{% endif %}">{{ '%+.3f'|format(p.nrr) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% endblock %}

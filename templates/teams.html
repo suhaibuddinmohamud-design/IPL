@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Teams · IPL 2026{% endblock %}
+{% block content %}
+
+<section class="page-head container">
+  <h1><i class="fa-solid fa-shield-halved"></i> Teams</h1>
+  <p class="muted">Standings, win share and net run rate across all 10 franchises.</p>
+</section>
+
+<section class="container team-grid">
+  {% for p in pts %}
+    {% set abbr_map = {} %}
+    {% for k,v in team_full.items() %}{% if v == p.team %}{% set _ = abbr_map.update({'a':k}) %}{% endif %}{% endfor %}
+    {% set abbr = abbr_map.get('a', p.team[:3]|upper) %}
+    {% set color = team_colors.get(abbr, '#ff6b2b') %}
+    <a class="team-card" href="{{ url_for('team_detail', abbr=abbr) }}" style="--tc: {{ color }}">
+      <div class="team-card-head">
+        <div class="team-logo" style="background: {{ color }}">{{ abbr }}</div>
+        <div>
+          <div class="team-name">{{ p.team }}</div>
+          <div class="muted small">Position #{{ p.position }}</div>
+        </div>
+      </div>
+      <div class="team-stats">
+        <div><b>{{ p.matches }}</b><span>M</span></div>
+        <div class="pos"><b>{{ p.wins }}</b><span>W</span></div>
+        <div class="neg"><b>{{ p.defeats }}</b><span>L</span></div>
+        <div><b>{{ p.points }}</b><span>Pts</span></div>
+        <div class="{% if p.nrr >= 0 %}pos{% else %}neg{% endif %}"><b>{{ '%+.2f'|format(p.nrr) }}</b><span>NRR</span></div>
+      </div>
+    </a>
+  {% endfor %}
+</section>
+
+<section class="container grid-2">
+  <div class="card chart-card"><h3>Team Wins</h3><img src="data:image/png;base64,{{ chart_wins }}"/></div>
+  <div class="card chart-card"><h3>Net Run Rate</h3><img src="data:image/png;base64,{{ chart_nrr }}"/></div>
+</section>
+
+<section class="container">
+  <div class="card">
+    <div class="card-head"><h3><i class="fa-solid fa-scale-balanced"></i> Head-to-Head Compare</h3></div>
+    <div class="h2h-bar">
+      <select id="h2h-t1">{% for t in team_list %}<option value="{{ t }}">{{ team_full[t] }}</option>{% endfor %}</select>
+      <span>vs</span>
+      <select id="h2h-t2">{% for t in team_list %}<option value="{{ t }}">{{ team_full[t] }}</option>{% endfor %}</select>
+      <button id="h2h-go" class="btn btn-primary">Compare</button>
+    </div>
+    <div id="h2h-result" class="h2h-result"></div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Matches · IPL 2026{% endblock %}
+{% block content %}
+
+<section class="page-head container">
+  <h1><i class="fa-solid fa-trophy"></i> Matches</h1>
+  <p class="muted">Every match of the season — filter by team or venue.</p>
+</section>
+
+<section class="container">
+  <div class="card">
+    <div class="filter-bar">
+      <input id="m-search" placeholder="Search team, venue, winner…"/>
+      <select id="m-venue"><option value="">All venues</option>{% for v in venues %}<option>{{ v }}</option>{% endfor %}</select>
+      <select id="m-team"><option value="">All teams</option>{% for t in teams %}<option>{{ t }}</option>{% endfor %}</select>
+      <a class="btn btn-ghost" href="{{ url_for('export_csv', table='matches') }}"><i class="fa-solid fa-download"></i> CSV</a>
+    </div>
+    <div class="table-wrap">
+    <table class="data" id="matches-table">
+      <thead><tr><th>#</th><th>Date</th><th>Match</th><th>Venue</th><th>Toss</th><th>Score</th><th>Winner</th><th>POTM</th></tr></thead>
+      <tbody>
+      {% for m in matches %}
+      <tr data-team1="{{ m.team1 }}" data-team2="{{ m.team2 }}" data-venue="{{ m.venue }}" data-winner="{{ m.match_winner or '' }}">
+        <td>{{ m.match_id }}</td>
+        <td>{{ m.date }}</td>
+        <td><b>{{ m.team1 }}</b> vs <b>{{ m.team2 }}</b><div class="muted small">{{ m.stage }}</div></td>
+        <td>{{ m.venue }}</td>
+        <td>{{ m.toss_winner }} ({{ m.toss_decision }})</td>
+        <td>{% if m.first_ings_score %}{{ m.first_ings_score|int }}/{{ m.first_ings_wkts|int }} – {{ m.second_ings_score|int }}/{{ m.second_ings_wkts|int }}{% else %}—{% endif %}</td>
+        <td><span class="winner">{{ m.match_winner or '—' }}</span></td>
+        <td>{{ m.player_of_the_match or '—' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section class="container grid-2">
+  <div class="card chart-card"><h3>Toss Impact</h3><img src="data:image/png;base64,{{ chart_toss }}"/></div>
+  <div class="card chart-card"><h3>Matches per Venue</h3><img src="data:image/png;base64,{{ chart_venue }}"/></div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Players · IPL 2026{% endblock %}
+{% block content %}
+
+<section class="page-head container">
+  <h1><i class="fa-solid fa-user"></i> Player Analytics</h1>
+  <p class="muted">Search, rank and compare batters, bowlers and fielders.</p>
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input id="player-search" placeholder="Search any player by name…" autocomplete="off"/>
+  </div>
+  <div id="search-results"></div>
+</section>
+
+<section class="container tabs">
+  <div class="tab-bar">
+    <button class="tab active" data-tab="bat">Batting</button>
+    <button class="tab" data-tab="bowl">Bowling</button>
+    <button class="tab" data-tab="field">Fielding</button>
+  </div>
+
+  <div class="tab-panel active" data-panel="bat">
+    <div class="card">
+      <div class="card-head"><h3>Top 20 Batters</h3>
+        <a class="link" href="{{ url_for('export_csv', table='batting') }}"><i class="fa-solid fa-download"></i> CSV</a>
+      </div>
+      <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>#</th><th>Batter</th><th>Team</th><th>M</th><th>Runs</th><th>Avg</th><th>SR</th><th>HS</th><th>4s</th><th>6s</th><th>50</th><th>100</th></tr></thead>
+        <tbody>
+        {% for b in batters %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><b>{{ b.batsman }}</b></td>
+          <td><span class="team-badge">{{ b.team }}</span></td>
+          <td>{{ b.matches }}</td>
+          <td><b>{{ b.runs }}</b></td>
+          <td>{{ '%.2f'|format(b.average) }}</td>
+          <td>{{ '%.1f'|format(b.strike_rate) }}</td>
+          <td>{{ b.high_score }}</td>
+          <td>{{ b.fours }}</td>
+          <td>{{ b.sixes }}</td>
+          <td>{{ b.fifties }}</td>
+          <td>{{ b.hundreds }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card chart-card"><h3>Top Run Scorers</h3><img src="data:image/png;base64,{{ chart_bat }}" alt=""/></div>
+      <div class="card chart-card"><h3>Top Strike Rates</h3><img src="data:image/png;base64,{{ chart_sr }}" alt=""/></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-panel="bowl">
+    <div class="card">
+      <div class="card-head"><h3>Top 20 Bowlers</h3>
+        <a class="link" href="{{ url_for('export_csv', table='bowling') }}"><i class="fa-solid fa-download"></i> CSV</a>
+      </div>
+      <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>#</th><th>Bowler</th><th>Team</th><th>M</th><th>Wkts</th><th>Eco</th><th>Avg</th><th>Overs</th><th>Dots</th><th>BBI</th><th>4w</th><th>5w</th></tr></thead>
+        <tbody>
+        {% for b in bowlers %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><b>{{ b.bowler }}</b></td>
+          <td><span class="team-badge">{{ b.team }}</span></td>
+          <td>{{ b.matches }}</td>
+          <td><b>{{ b.wickets }}</b></td>
+          <td>{{ '%.2f'|format(b.economy) }}</td>
+          <td>{{ '%.2f'|format(b.avg) }}</td>
+          <td>{{ b.overs }}</td>
+          <td>{{ b.dot_balls }}</td>
+          <td>{{ b.bbi }}</td>
+          <td>{{ b['4wh'] }}</td>
+          <td>{{ b['5wh'] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card chart-card"><h3>Top Wicket Takers</h3><img src="data:image/png;base64,{{ chart_bowl }}" alt=""/></div>
+      <div class="card chart-card"><h3>Best Economy</h3><img src="data:image/png;base64,{{ chart_eco }}" alt=""/></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-panel="field">
+    <div class="card">
+      <div class="card-head"><h3>Top Fielders</h3></div>
+      <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Rank</th><th>Player</th><th>Team</th><th>M</th><th>Catches</th><th>C/M</th></tr></thead>
+        <tbody>
+        {% for f in fielders %}
+        <tr>
+          <td>{{ f.rank }}</td>
+          <td><b>{{ f.player }}</b></td>
+          <td><span class="team-badge">{{ f.team }}</span></td>
+          <td>{{ f.matches }}</td>
+          <td><b>{{ f.catches }}</b></td>
+          <td>{{ '%.2f'|format(f.cpm) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
